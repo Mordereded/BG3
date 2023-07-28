@@ -3,7 +3,12 @@
 <head>
     <title>Сайт с отображением времени</title>
     <style>
+        @font-face {
+            font-family: 'Antikvarika'; /* Название вашего пользовательского шрифта */
+            src: url('fonts/Antikvarika.ttf') format('truetype'); /* Путь к вашему шрифту */
+        }
         body {
+
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
@@ -11,7 +16,8 @@
             background-image: url('png/bear.jpg'); /* Путь к вашей картинке в папке "images" */
             background-size: cover;
             background-position: top;
-background-repeat: no-repeat;
+            background-repeat: no-repeat;
+            font-family: 'Antikvarika', sans-serif;
         }
         .content {
             background-color: rgba(255, 255, 255, 0.7); /* Прозрачный фон для текста */
@@ -23,20 +29,20 @@ background-repeat: no-repeat;
             margin-bottom: 20px;
         }
         #countdown {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="content">
-        <h1>До определенной даты осталось:</h1>
+        <h1>До выхода baldur's gate 3 осталось:</h1>
         <div id="countdown"></div>
     </div>
 
     <script>
         // Установите дату, до которой нужно отсчитывать время (формат: "Год-Месяц-День Час:Минута:Секунда")
-        var targetDate = new Date("2023-12-31 23:59:59").getTime();
+        var targetDate = new Date("2023-08-03 12:00:00").getTime();
 
         function updateCountdown() {
             var now = new Date().getTime();

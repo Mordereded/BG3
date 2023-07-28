@@ -4,83 +4,163 @@
     <title>Сайт с отображением времени</title>
     <style>
         @font-face {
-            font-family: 'Antikvarika'; /* Название вашего пользовательского шрифта */
-            src: url('fonts/Antikvarika.ttf') format('truetype'); /* Путь к вашему шрифту */
+            font-family: 'Antikvarika';
+            src: url('fonts/Antikvarika.ttf') format('truetype');
         }
-        body {
 
+        body {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
             text-align: center;
-            background-image: url('png/bear.jpg'); /* Путь к вашей картинке в папке "images" */
+            background-image: url('png/bear.jpg');
             background-size: cover;
             background-position: top;
             background-repeat: no-repeat;
             font-family: 'Antikvarika', sans-serif;
         }
+
         .content {
-            background-color: rgba(255, 255, 255, 0.7); /* Прозрачный фон для текста */
+            background-color: rgba(255, 255, 255, 0.7);
             padding: 20px;
             border-radius: 10px;
             display: inline-block;
+            margin-top: 50px; /* Добавленный отступ сверху */
         }
+
         h1 {
             margin-bottom: 20px;
         }
+
         #countdown {
             font-size: 28px;
             font-weight: bold;
         }
+
         #playButton {
-            background-color: #3498db;
+            background-color: transparent;
             color: #fff;
             border: none;
-            padding: 12px 20px;
+            padding: 20px 30px;
             font-size: 20px;
             border-radius: 10px;
             cursor: pointer;
+            transition: background-color 0.2s;
+            outline: none;
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            display: flex;
+            align-items: center;
         }
 
-            #playButton i {
+            #playButton img {
+                width: 50px;
+                height: 50px;
                 margin-right: 8px;
+                border-radius: 50%;
+                border: 2px solid #fff;
+                padding: 4px;
             }
 
-            /* Стили для изменения вида при наведении курсора */
             #playButton:hover {
-                background-color: #2980b9;
+                background-color: rgba(0, 0, 0, 0.2);
             }
 
-            /* Стили для изменения вида при активации (нажатии) кнопки */
             #playButton:active {
-                background-color: #1c678a;
+                background-color: rgba(0, 0, 255, 0.4);
             }
+
+            #playButton.clicked img {
+                color: red;
+            }
+
+        #volumeControlContainer {
+            width: 100%;
+            height: 20px;
+            margin-top: 10px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        #volumeControl {
+            width: 50%;
+            height: 100%;
+            background-color: #007bff;
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+
+        #volumeSlider {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <button id="playButton" onclick="toggleAudio()">
-        <i class="fas fa-play"></i>
+        <img src="png/Play.png" alt="Play Icon">
+        <span>Включить музыку</span>
     </button>
+    <div id="volumeControlContainer" onmousedown="startDrag(event)" onmouseup="stopDrag()" onmouseleave="stopDrag()" onmousemove="moveDrag(event)">
+        <div id="volumeControl"></div>
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5" oninput="changeVolume()">
+    </div>
     <audio id="music" controls loop style="display: none;">
         <source src="audio/BGM.mp3" type="audio/mpeg">
     </audio>
     <script>
-        // Получаем ссылку на элементы
         var playButton = document.getElementById('playButton');
         var audio = document.getElementById('music');
+        var volumeControl = document.getElementById('volumeControl');
+        var volumeSlider = document.getElementById('volumeSlider');
+        var isClicked = false;
+        var isDragging = false;
 
-        // Функция для запуска или остановки аудио по нажатию на иконку
         function toggleAudio() {
-        if (audio.paused) {
+        if (!isClicked) {
         audio.play();
-        playButton.innerHTML = '<i class="fas fa-pause"></i>';
+        playButton.classList.add('clicked');
+        playButton.innerHTML = '<img src="png/Play.png" alt="Pause Icon"><span>Выключить музыку</span>';
+        isClicked = true;
         } else {
         audio.pause();
-        playButton.innerHTML = '<i class="fas fa-play"></i>';
+        playButton.classList.remove('clicked');
+        playButton.innerHTML = '<img src="png/Play.png" alt="Play Icon"><span>Включить музыку</span>';
+        isClicked = false;
         }
         }
+
+        function changeVolume() {
+        var volumeValue = volumeSlider.value;
+        volumeControl.style.width = volumeValue * 100 + '%';
+        audio.volume = volumeValue;
+        }
+
+        function startDrag(e) {
+        isDragging = true;
+        moveDrag(e);
+        }
+
+        function stopDrag() {
+        isDragging = false;
+        }
+
+        function moveDrag(e) {
+        if (isDragging) {
+        var containerLeft = volumeControlContainer.getBoundingClientRect().left;
+        var containerWidth = volumeControlContainer.offsetWidth;
+        var mouseX = e.clientX;
+        var volumeValue = (mouseX - containerLeft) / containerWidth;
+        volumeValue = Math.max(0, Math.min(1, volumeValue));
+        volumeSlider.value = volumeValue;
+        changeVolume();
+        }
+        }
+
         window.addEventListener('load', function() {
-            playButton.click();
+        playButton.click();
         });
     </script>
 
@@ -90,7 +170,6 @@
     </div>
 
     <script>
-        // Установите дату, до которой нужно отсчитывать время (формат: "Год-Месяц-День Час:Минута:Секунда")
         var targetDate = new Date("2023-08-03 12:00:00").getTime();
 
         function updateCountdown() {
@@ -105,8 +184,12 @@
         document.getElementById("countdown").innerHTML = days + " дней " + hours + " часов " + minutes + " минут " + seconds + " секунд";
         }
 
-        // Обновляем отображение каждую секунду
         setInterval(updateCountdown, 1000);
     </script>
 </body>
 </html>
+
+
+
+
+
